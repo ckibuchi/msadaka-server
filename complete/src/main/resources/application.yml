@@ -1,10 +1,11 @@
 server:
   port: 8090
-
 #TODO: figure out why I need this here and in bootstrap.yml
 spring:
   application:
-    name: testLatticeApp
+    name: msadaka
+  profiles:
+    active: dev
 
 ribbon:
   ServerListRefreshInterval: 1000

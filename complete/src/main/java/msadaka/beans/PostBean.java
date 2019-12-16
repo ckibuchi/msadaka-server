@@ -15,7 +15,7 @@ public class PostBean {
 
     @JsonAnySetter
     public void setMap(String name, String value) {
-        if (this.map == null) map = new  HashMap<String, String>();
+        if (this.map == null) map = new HashMap<String, String>();
         this.map.put(name, value);
     }
 }

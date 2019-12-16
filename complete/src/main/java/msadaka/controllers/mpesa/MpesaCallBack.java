@@ -26,7 +26,7 @@ public class MpesaCallBack {
 
     Functions fn =new Functions();
 
-    @PostMapping("/mpesa-call-back")
+    @PostMapping("/api/v1/mpesa-call-back")
     public ResponseEntity mpesacallback(@RequestBody String data){
         System.out.println("data "+data);
 

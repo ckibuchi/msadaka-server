@@ -34,8 +34,6 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         return client;
     }
 
-
-
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
 
@@ -51,6 +49,4 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
         messageConverters.add(new MappingJackson2HttpMessageConverter());
         super.configureMessageConverters(messageConverters);
     }
-
-
 }
