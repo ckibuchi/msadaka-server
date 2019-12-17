@@ -56,51 +56,6 @@ public class WebClientImpl implements WebClient {
     public String getBearer() {
 
         return ScheduledTasks.bearer;
-       /* try {
-
-
-            String appKeySecret = this.app_key + ":" + this.app_secret;
-            System.out.println("this.app_key + this.app_secret "+this.app_key + ":" + this.app_secret);
-            byte[] bytes = appKeySecret.getBytes("ISO-8859-1");
-            String auth= Base64.getEncoder().encodeToString(bytes);
-
-            final OkHttpClient client = new OkHttpClient();
-            System.out.println("this.authurl "+this.authurl);
-
-            Request request = new Request.Builder()
-                    .url(this.authurl)
-                    .get()
-                    .addHeader("Authorization", "Basic " + auth.trim())
-                    //.addHeader("cache-control", "no-cache")
-                    .build();
-            Response response  =    client.newCall(request).execute();
-            // Background Code
-            String resp=response.body().string();
-            System.out.println("response "+resp);
-            JSONObject results=new JSONObject(resp);
-            if(results.has("access_token"))
-            {
-                try{
-                    System.out.println("token: "+results.getString("access_token"));
-                    this.bearer=results.getString("access_token");
-
-
-
-                }
-                catch(Exception e)
-                {e.printStackTrace();
-                }
-            }
-        }
-
-        catch(Exception e)
-        {
-            e.printStackTrace();
-        }
-
-        return this.bearer;
-        */
-
-    }
+         }
 
 }

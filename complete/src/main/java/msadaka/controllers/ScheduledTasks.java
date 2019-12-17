@@ -50,8 +50,7 @@ public class ScheduledTasks {
         try {
 
 
-            String appKeySecret = this.app_key + ":" + this.app_secret;
-            System.out.println("this.app_key + this.app_secret " + this.app_key + ":" + this.app_secret);
+            String appKeySecret = this.app_key.concat(":").concat(this.app_secret);
             byte[] bytes = appKeySecret.getBytes("ISO-8859-1");
             String auth = Base64.getEncoder().encodeToString(bytes);
 
