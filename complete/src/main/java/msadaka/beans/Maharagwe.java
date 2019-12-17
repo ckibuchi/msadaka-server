@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.net.ssl.X509TrustManager;
 import java.nio.file.Paths;
+
 public class Maharagwe {
 
     @Bean

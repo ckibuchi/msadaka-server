@@ -1,0 +1,44 @@
+algolia:
+  appid: S1RN8E00GF
+  index: churches_prod
+  key: 327d5cb47d82ce8742bbb365e82ce7d0
+mombasa:
+  rate: 2.0
+mpesa:
+  appkey: Sd5l3hiCcwA5lqxugGA50yN2j9nBr1zA
+  appsecret: 3FyAQdGhJTexg2yh
+  authurl: https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
+  callbackurl: https://quantumsystems.co.ke:8092/mpesa-call-back
+  endpoint: https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest
+  passkey: 832fe8ede696958c2276e505529dba6031d0bf64fab82e89d1a7091ee5085b76
+  shortcode: 373100
+nairobi:
+  rate: 1.0
+security:
+  require-ssl: true
+server:
+  port: 8092
+  ssl:
+    key-alias: tomcat
+    key-store: classpath:keystore.p12
+    key-store-password: Chris@2018
+    key-store-type: PKCS12
+sms:
+  apikey: 211cbffc266102e114aae4bdebbcae84bf608853d24cb1d2617aa2399ef3958d
+  send: false
+  username: kespay
+spring:
+  datasource:
+    password: springUser321!
+    testWhileIdle: true
+    url: jdbc:mysql://kespay.com:3306/msadaka_portal?useSSL=false
+    username: 'springuser '
+    validationQuery: SELECT 1
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false

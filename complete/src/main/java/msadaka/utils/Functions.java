@@ -12,53 +12,45 @@ public class Functions {
     public static JSONObject data = new JSONObject();
     public static DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss");
     public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-    public  Functions()
-    {}
-    public JSONObject prepareLNMRequest(String msisdn,String amt, String account,String timestamp,String shortcode,String payBill,String passkey,String callbackurl)
-    {
+
+    public Functions() {
+    }
+
+    public JSONObject prepareLNMRequest(String msisdn, String amt, String account, String timestamp, String shortcode, String payBill, String passkey, String callbackurl) {
 
         try {
 
-
-
-            System.out.println("Phone: "+msisdn);
-            System.out.println("Phone2: 254"+msisdn.substring(msisdn.length() - 9));
-            byte[] message  =(shortcode+passkey+timestamp).getBytes("UTF-8"); //base64.encode(Shortcode:Passkey:Timestamp)
-            String password =  Base64.getEncoder().encodeToString(message);
-            password=password.replaceAll("\n","");
+            System.out.println("Phone: " + msisdn);
+            System.out.println("Phone2: 254" + msisdn.substring(msisdn.length() - 9));
+            byte[] message = (shortcode + passkey + timestamp).getBytes("UTF-8"); //base64.encode(Shortcode:Passkey:Timestamp)
+            String password = Base64.getEncoder().encodeToString(message);
+            password = password.replaceAll("\n", "");
             data.put("BusinessShortCode", shortcode);
-            data.put("Password",password);
+            data.put("Password", password);
             data.put("Timestamp", timestamp);
             data.put("TransactionType", "CustomerPayBillOnline");
-            data.put("Amount",amt);
-            data.put("PartyA","254"+msisdn.substring(msisdn.length() - 9));
+            data.put("Amount", amt);
+            data.put("PartyA", "254" + msisdn.substring(msisdn.length() - 9));
             data.put("PartyB", payBill);
-            data.put("PhoneNumber", "254"+msisdn.substring(msisdn.length() - 9));
+            data.put("PhoneNumber", "254" + msisdn.substring(msisdn.length() - 9));
             data.put("CallBackURL", callbackurl);
-            data.put("AccountReference",account);
-            data.put("TransactionDesc",account);
+            data.put("AccountReference", account);
+            data.put("TransactionDesc", account);
 
-
-
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
 
             e.printStackTrace();
         }
 
-        return  data;
+        return data;
     }
 
-    public void sendSMS(Payment payment,String username,String apikey)
-    {
-
-
+    public void sendSMS(Payment payment, String username, String apikey) {
 
         // Specify the numbers that you want to send to in a comma-separated list
         // Please ensure you include the country code (+254 for Kenya in this case)
         String recipients = payment.getMsisdn();
-        String message="";
+        String message = "";
 
       /*  if(payment.getError_code2().equalsIgnoreCase("0"))
         // And of course we want our recipients to know what we really do
@@ -78,7 +70,7 @@ public class Functions {
                     "We are sorry that an error occured. Please try again later..";
         }*/
         // Create a new instance of our awesome gateway class
-        AfricasTalkingGateway gateway  = new AfricasTalkingGateway(username,apikey);
+        AfricasTalkingGateway gateway = new AfricasTalkingGateway(username, apikey);
 
         /*************************************************************************************
          NOTE: If connecting to the sandbox:
@@ -95,8 +87,7 @@ public class Functions {
         // be captured in the Exception class below
         try {
             JSONArray results = gateway.sendMessage(recipients, message);
-System.out.println("SMS Resp: "+results);
-            for( int i = 0; i < results.length(); ++i ) {
+            for (int i = 0; i < results.length(); ++i) {
                 JSONObject result = results.getJSONObject(i);
                 System.out.print(result.getString("status") + ","); // status is either "Success" or "error message"
                 System.out.print(result.getLong("statusCode") + ",");

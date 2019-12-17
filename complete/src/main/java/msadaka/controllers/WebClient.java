@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Component
 public interface WebClient {
-    String stkpushrequest(String mpesaendpoint,String data);
+    String stkpushrequest(String mpesaendpoint, String data);
+
     String getBearer();
 }
