@@ -6,14 +6,3 @@ spring:
     name: msadaka
   profiles:
     active: dev
-
-ribbon:
-  ServerListRefreshInterval: 1000
-
-endpoints:
-  health:
-    sensitive: false
-  restart:
-    enabled: true
-  shutdown:
-    enabled: true
