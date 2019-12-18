@@ -12,6 +12,13 @@ jobs:
           command: ./gradlew check
 
       - run: ./gradlew build
+      deployment:
+        staging:
+          branch: master
+          commands:
+            - git remote add heroku git@heroku.com:msadaka-server.git
+            - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
+            - cd ../../.. && git subtree push --prefix https://github.com/ckibuchi/msadaka-server heroku master
 
   build_docker:
     working_directory: ~/msadaka-server
@@ -61,13 +68,6 @@ jobs:
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push ckeidev/msadaka-server:latest
 
-  deployment:
-    staging:
-      branch: master
-      commands:
-        - git remote add heroku git@heroku.com:msadaka-server.git
-        - "[[ ! -s \"$(git rev-parse --git-dir)/shallow\" ]] || git fetch --unshallow"
-        - cd ../../.. && git subtree push --prefix https://github.com/ckibuchi/msadaka-server heroku master
 
   push_production:
     working_directory: ~/msadaka-server
