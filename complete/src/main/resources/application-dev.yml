@@ -20,7 +20,7 @@ sms:
   username: kespay
 spring:
   datasource:
-    url: jdbc:h2:/tmp/notification/msadaka
+    url: jdbc:h2:~/tmp/db/msadaka;DB_CLOSE_DELAY=-1
     username: sa
     password:
     testWhileIdle: true

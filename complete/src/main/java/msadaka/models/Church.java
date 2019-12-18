@@ -6,6 +6,7 @@ import msadaka.enums.PayBillStatus;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.Instant;
 
 @Entity
 @Table(name = "churches")
@@ -22,9 +23,9 @@ public class Church implements Serializable {
     private String payBill;
     @Enumerated(EnumType.STRING)
     PayBillStatus status;
-    private Date creationDate;
-    private Date lastRenewed;
-    private Date expiryDate;
+    private Instant creationDate;
+    private Instant lastRenewed;
+    private Instant expiryDate;
     private String userEmail;
     private String mpesaAppkey;
     private String mpesaAppsecret;
@@ -72,27 +73,27 @@ public class Church implements Serializable {
         this.status = status;
     }
 
-    public Date getCreationDate() {
+    public Instant getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(Instant creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Date getLastRenewed() {
+    public Instant getLastRenewed() {
         return lastRenewed;
     }
 
-    public void setLastRenewed(Date lastRenewed) {
+    public void setLastRenewed(Instant lastRenewed) {
         this.lastRenewed = lastRenewed;
     }
 
-    public Date getExpiryDate() {
+    public Instant getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Date expiryDate) {
+    public void setExpiryDate(Instant expiryDate) {
         this.expiryDate = expiryDate;
     }
 

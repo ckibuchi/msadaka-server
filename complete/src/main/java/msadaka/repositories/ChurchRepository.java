@@ -14,4 +14,7 @@ public interface ChurchRepository extends CrudRepository<Church, Long> {
     Church findChurchByIdAndStatus(Long Id, PayBillStatus payBillStatus);
 
     List<Church> findChurchesByUserEmail(String userEmail);
+
+    List<Church> findChurchesByNameContainingIgnoreCase(String name);
+
 }

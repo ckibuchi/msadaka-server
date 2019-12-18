@@ -1,7 +1,6 @@
 package msadaka.controllers.apis;
 
 import com.google.gson.Gson;
-import msadaka.beans.Maharagwe;
 import msadaka.beans.PostBean;
 import msadaka.models.Payment;
 import msadaka.repositories.PaymentRepository;
@@ -15,10 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+
+import static org.springframework.util.StringUtils.isEmpty;
 
 //@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,89 +26,59 @@ public class PaymentsContoller {
 
     @PostMapping("/getparkings")
     //@Produces({MediaType.APPLICATION_JSON})
-    public String getparkingsbyRegandDate(@RequestParam(name = "carRegNo", required = true) String carRegNo) {
-        List<JSONObject> response = new ArrayList<JSONObject>();
+    public List<Payment> getparkingsbyRegandDate(@RequestParam(name = "carRegNo", required = true) String carRegNo) {
+
         Date utilDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-        List<Payment> payments = new ArrayList<>();// paymentRepository.findPaymentsByCarRegNoAndPaymentDate(carRegNo.replaceAll("[^a-zA-Z0-9]", "").trim(),sqlDate);
-        if (!payments.isEmpty()) {
-            Gson gson = new Gson();
-            for (Payment payment : payments) {
-                String jsonString = gson.toJson(payment);
-                try {
-                    JSONObject paymentobject = new JSONObject(jsonString);
-                    response.add(paymentobject);
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return response.toString();
+        List<Payment> payments = Collections.emptyList();// paymentRepository.findPaymentsByCarRegNoAndPaymentDate(carRegNo.replaceAll("[^a-zA-Z0-9]", "").trim(), sqlDate);
+
+        return payments;
 
     }
 
     @RequestMapping("/search-payments")
     //@Produces({MediaType.APPLICATION_JSON})
-    public String searchPayments(@RequestParam(name = "carRegNo", required = false, defaultValue = "") String carRegNo,
-                                 @RequestParam(name = "county", required = false, defaultValue = "") String county,
-                                 @RequestParam(name = "subCounty", required = false, defaultValue = "") String subCounty,
-                                 @RequestParam(name = "dateFrom", required = false, defaultValue = "") String dateFrom,
-                                 @RequestParam(name = "dateTo", required = false, defaultValue = "") String dateTo) {
+    public List<Payment> searchPayments(@RequestParam(name = "carRegNo", required = false, defaultValue = "") String carRegNo,
+                                        @RequestParam(name = "county", required = false, defaultValue = "") String county,
+                                        @RequestParam(name = "subCounty", required = false, defaultValue = "") String subCounty,
+                                        @RequestParam(name = "dateFrom", required = false, defaultValue = "") String dateFrom,
+                                        @RequestParam(name = "dateTo", required = false, defaultValue = "") String dateTo) {
 
 
-        List<JSONObject> response = new ArrayList<JSONObject>();
         Date utilDate = new Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
         String carRegno2 = carRegNo.replaceAll("[^a-zA-Z0-9]", "").trim();
         List<Payment> payments = null;
 
-        if (carRegno2.isEmpty() && county.isEmpty() && subCounty.isEmpty() && dateFrom.isEmpty() && dateTo.isEmpty()) {
+        return getPayments(county, subCounty, dateFrom, dateTo, carRegno2);
+    }
+
+    private List<Payment> getPayments(@RequestParam(name = "county", required = false, defaultValue = "") String county, @RequestParam(name = "subCounty", required = false, defaultValue = "") String subCounty, @RequestParam(name = "dateFrom", required = false, defaultValue = "") String dateFrom, @RequestParam(name = "dateTo", required = false, defaultValue = "") String dateTo, String carRegno2) {
+        List<Payment> payments = Collections.emptyList();
+        if (isEmpty(carRegno2) && isEmpty(county) && isEmpty(subCounty) && isEmpty(dateFrom) && isEmpty(dateTo)) {
             logger.info("No filters.... Show all transactions for today ");
             payments = new ArrayList<>();
             ;// paymentRepository.findPaymentsByPaymentDate(sqlDate);
-        } else if (dateFrom.isEmpty() || dateTo.isEmpty()) {
+        } else if (isEmpty(dateFrom) || isEmpty(dateTo)) {
             logger.info("No Dates...");
-            payments = new ArrayList<>();//=  paymentRepository.findPaymentsByCarRegNoIgnoreCaseContainingAndCountyIgnoreCaseContainingAndSubCountyIgnoreCaseContainingAndPaymentDate(carRegno2,county,subCounty,sqlDate);
+            payments = Collections.emptyList(); //paymentRepository.findPaymentsByCarRegNoIgnoreCaseContainingAndCountyIgnoreCaseContainingAndSubCountyIgnoreCaseContainingAndPaymentDate(carRegno2, county,subCounty, new Date());
         } else {
             try {
-                java.util.Date datef = Functions.sdf1.parse(dateFrom);
+                Date datef = Functions.sdf1.parse(dateFrom);
                 java.sql.Date sqlDateFrom = new java.sql.Date(datef.getTime());
 
-                java.util.Date datet = Functions.sdf1.parse(dateTo);
+                Date datet = Functions.sdf1.parse(dateTo);
                 java.sql.Date sqlDateTo = new java.sql.Date(datet.getTime());
-                payments = new ArrayList<>();//=  paymentRepository.findPaymentsByCarRegNoIgnoreCaseContainingAndCountyIgnoreCaseContainingAndSubCountyIgnoreCaseContainingAndPaymentDateGreaterThanEqualAndPaymentDateIsLessThanEqual(carRegno2,county,subCounty,sqlDateFrom,sqlDateTo);
+                payments = Collections.emptyList();// paymentRepository.findPaymentsByCarRegNoIgnoreCaseContainingAndCountyIgnoreCaseContainingAndSubCountyIgnoreCaseContainingAndPaymentDateGreaterThanEqualAndPaymentDateIsLessThanEqual(carRegno2, county, subCounty, sqlDateFrom, sqlDateTo);
                 logger.info("dateFrom >>" + dateFrom + " sqlDateFrom >> " + sqlDateFrom);
                 logger.info("sqlDateTo >> " + sqlDateTo + " sqlDateTo >> " + sqlDateTo);
             } catch (Exception e) {
                 logger.info("Date conversion Failed Badly!!!!!!!!!!!!!!!");
                 e.printStackTrace();
 
-                payments = new ArrayList<>();// paymentRepository.findPaymentsByCarRegNoIgnoreCaseContainingAndCountyIgnoreCaseContainingAndSubCountyIgnoreCaseContainingAndPaymentDate(carRegno2,county,subCounty,sqlDate);
-
-
-            }
-
-
-        }
-
-
-        if (!payments.isEmpty()) {
-            Gson gson = new Gson();
-            for (Payment payment : payments) {
-                String jsonString = gson.toJson(payment);
-                try {
-                    JSONObject paymentobject = new JSONObject(jsonString);
-                    response.add(paymentobject);
-                } catch (JSONException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
             }
         }
-        return response.toString();
-        //   return Response.ok(response.toString()).header("Access-Control-Allow-Origin", "*").header(  "Access-Control-Allow-Headers","Authorization").build();
-
+        return payments;
     }
 
     @PostMapping("/getTodaysTotal")
