@@ -13,18 +13,15 @@ jobs:
 
       - run: ./gradlew build
 
-      - run:
-          name: Publish
-          command: ./gradlew publish
-
   build_docker:
     working_directory: ~/msadaka-server
     docker:
-      - image: docker:17.05.0-ce-git
+      - image: circleci/openjdk:8-jdk
+
     steps:
+      - checkout
       - setup_remote_docker
-      - attach_workspace:
-          at: .
+
       - run:
           name: Build application Docker image
           command: |
