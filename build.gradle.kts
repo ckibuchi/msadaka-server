@@ -1,5 +1,4 @@
-import java.io.File
-import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension
+
 buildscript {
     repositories {
         mavenLocal()
@@ -13,6 +12,7 @@ buildscript {
 plugins {
     idea
     java
+    eclipse
     id("io.spring.dependency-management") version "1.0.7.RELEASE"
     id("org.springframework.boot") version "2.1.8.RELEASE"
     id("com.gorylenko.gradle-git-properties") version "1.5.2"
@@ -60,6 +60,3 @@ repositories {
     mavenLocal()
     mavenCentral()
 }
-
-
-
