@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import msadaka.beans.PostBean;
 import msadaka.models.Payment;
 import msadaka.repositories.PaymentRepository;
+import msadaka.services.PaymentService;
 import msadaka.utils.Functions;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +24,9 @@ import static org.springframework.util.StringUtils.isEmpty;
 @RequestMapping("/api/v1/payments")
 public class PaymentsContoller {
     private Logger logger = LoggerFactory.getLogger(PaymentsContoller.class);
+
+    @Autowired
+    PaymentService paymentService;
 
     @PostMapping("/getparkings")
     //@Produces({MediaType.APPLICATION_JSON})
@@ -193,6 +197,12 @@ public class PaymentsContoller {
 
         return response;
 
+    }
+
+    @GetMapping("/getChurchPayments/{Id}")
+    public List<Payment> findPaymentsByChurchId(@PathVariable long Id)
+    {
+        return  paymentService.findPaymentsByChurchId(Id);
     }
 
 

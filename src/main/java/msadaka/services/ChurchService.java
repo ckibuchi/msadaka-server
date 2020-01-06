@@ -169,11 +169,6 @@ public class ChurchService {
 
     private StkPushResponse getStkPushResponse(Payment payment, JSONObject results) {
         if (results.has("fault")) {
-            //return "Sorry, an error occured. Try again";
-            Date now2 = new Date();
-
-            String timestamp2 = new String(Functions.sdf.format(now2)).replaceAll("-", "");
-
             payment.setDesc1("Sorry, auth error occured. Try again");
             payment.setError_code1(results.getString("errorCode"));
             payment.setDesc2("Sorry, auth error occured. Try again");
@@ -204,7 +199,6 @@ public class ChurchService {
                 }
 
             }
-            //  return results.getString("errorMessage");
             response.setStatus("error");
             response.setMessage(results.getString("errorMessage"));
             return response;
