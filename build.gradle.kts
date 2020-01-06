@@ -19,7 +19,7 @@ plugins {
 }
 
 group = "m-sadaka"
-version = "1.0.1"
+version = "1.0.2"
 
 val javaVersion by extra { JavaVersion.VERSION_1_8}
 val swaggerVersion by extra { "2.9.2" }
