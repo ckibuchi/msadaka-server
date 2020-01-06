@@ -1,6 +1,8 @@
 package msadaka.controllers.apis;
 
 import msadaka.beans.PostBean;
+import msadaka.dto.StkPushRequest;
+import msadaka.dto.StkPushResponse;
 import msadaka.models.Church;
 import msadaka.services.ChurchService;
 import org.slf4j.Logger;
@@ -50,15 +52,18 @@ public class ChurchesController {
     }
 
     @PostMapping("/giveToChurch")
-    public String giveToChurch(@RequestBody PostBean bean) {
+    public StkPushResponse giveToChurch(@RequestBody StkPushRequest stkPushRequest) {
 
         try {
-            HashMap<String, String> map = bean.getMap();
 
-            return churchService.stkPush(Double.parseDouble(map.get("amount")), map.get("msisdn"), Long.parseLong(map.get("churchID")), map.get("reference"));
+            return churchService.stkPush(Double.parseDouble(stkPushRequest.getAmount()), stkPushRequest.getMsisdn(), Long.parseLong(stkPushRequest.getChurchId()), stkPushRequest.getReference());
 
         } catch (Exception e) {
-            return "{'status':'error','message':'" + e.getMessage() + "'}";
+            e.printStackTrace();
+           StkPushResponse error= new StkPushResponse();
+           error.setStatus("error");
+           error.setMessage(e.getMessage());
+           return error;
         }
 
     }

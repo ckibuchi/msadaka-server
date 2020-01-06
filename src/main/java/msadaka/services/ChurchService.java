@@ -2,6 +2,7 @@ package msadaka.services;
 
 import msadaka.beans.PostBean;
 import msadaka.controllers.WebClient;
+import msadaka.dto.StkPushResponse;
 import msadaka.enums.PayBillStatus;
 import msadaka.enums.PaymentMethod;
 import msadaka.models.Church;
@@ -58,6 +59,8 @@ public class ChurchService {
     Functions fn = new Functions();
     public static JSONObject data = new JSONObject();
 
+    StkPushResponse response = new StkPushResponse();
+
 
     public Church createChurch(Church church) {
 
@@ -92,22 +95,20 @@ public class ChurchService {
         return "{'status':'success','message':'PayBill Deleted!'}";
     }
 
-    public List<Church> listChurchesByUserEmail(String userEmail)
-    {
-       return churchRepository.findChurchesByUserEmail(userEmail);
+    public List<Church> listChurchesByUserEmail(String userEmail) {
+        return churchRepository.findChurchesByUserEmail(userEmail);
 
     }
 
-    public List<Church> findAll()
-    {
+    public List<Church> findAll() {
         return (List<Church>) churchRepository.findAll();
     }
 
-    public List<Church> findAllByName(String name)
-    {
+    public List<Church> findAllByName(String name) {
         return churchRepository.findChurchesByNameContainingIgnoreCase(name);
     }
-    public String stkPush(Double the_amount, String msisdn, Long churchID, String reference) {
+
+    public StkPushResponse stkPush(Double the_amount, String msisdn, Long churchID, String reference) {
         String amount = new String("" + String.format("%.0f", the_amount));
 
         Date now = new Date();
@@ -116,133 +117,149 @@ public class ChurchService {
         Payment payment = new Payment();
         try {
             // Church church=churchRepository.findChurchByIdAndStatus(churchID,PayBillStatus.ACTIVE);
-            logger.info("Searching for church with ID: " + churchID);
-            Church church = churchRepository.findChurchById(churchID);
-            if (church != null) {
-                logger.info("Found  a church wirh ID: " + churchID);
-
-                if (church.getStatus() != PayBillStatus.ACTIVE) {
-                    return "{\"status\":\"error\",\"message\":\"Sorry, The paybill is pending renewal\"}";
-                }
-
-
-                payment.setPaymentMethod(PaymentMethod.MPESA);
-                payment.setAmount(amount);
-                payment.setChurch(church);
-                payment.setStartTime(timestamp);
-                payment.setMsisdn(msisdn);
-                payment.setReference(reference);
-                logger.info("Preparing request");
-                data = fn.prepareLNMRequest(msisdn, amount, reference, timestamp, church.getShortCode(), church.getPayBill(), church.getMpesaPasskey(), callbackUrl);
-                logger.info("Request prepared.. now calling STKPush");
-                //WebClient client=new WebClient( mpesaendpoint, authurl, church.getMpesaAppsecret(), church.getMpesaAppkey());
-                logger.info("Calling..... ");
-                String result = webClient.stkpushrequest(mpesaEndpoint, data.toString());
-                logger.info("LNM REQ RES" + result);
-                logger.info("Called StkPush.. Saving payment now");
-                payment = paymentRepository.save(payment);
-                logger.info("Payment Saved..");
-
-                JSONObject results = new JSONObject(result);
-
-                if (results.has("fault")) {
-                    //return "Sorry, an error occured. Try again";
-                    Date now2 = new Date();
-
-                    String timestamp2 = new String(Functions.sdf.format(now2)).replaceAll("-", "");
-
-                    payment.setDesc1("Sorry, auth error occured. Try again");
-                    payment.setError_code1(results.getString("errorCode"));
-                    payment.setDesc2("Sorry, auth error occured. Try again");
-                    payment.setError_code2(results.getString("errorCode"));
-                    payment.setStatus("FAILED");
-                    paymentRepository.save(payment);
-                    return "{\"status\":\"error\",\"message\":\"Sorry, an error occured. Try again\"}";
-                } else if (results.has("errorMessage")) {
-                    if (results.has("errorCode")) {
-                        if (results.getString("errorCode").equalsIgnoreCase("404.001.03")) {
-                            try {
-
-                                Date now2 = new Date();
-
-                                String timestamp2 = new String(Functions.sdf.format(now2)).replaceAll("-", "");
-
-                                payment.setDesc1("Sorry, auth error occured. Try again");
-                                payment.setError_code1(results.getString("errorCode"));
-                                payment.setDesc2(results.getString("CustomerMessage"));
-                                payment.setError_code2(results.getString("ResponseCode"));
-                                payment.setStatus("FAILED");
-                                paymentRepository.save(payment);
-                                return "{\"status\":\"error\",\"message\":\"Sorry, an error occured. Try again\"}";
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-
-                    }
-                    //  return results.getString("errorMessage");
-                    return "{\"status\":\"error\",\"message\":\"" + results.getString("errorMessage") + "\"}";
-
-                } else if (results.has("ResponseCode")) {
-                    if (results.has("CustomerMessage")) {
-
-
-                        if (results.getString("ResponseCode").equalsIgnoreCase("0")) {
-                            payment.setDesc1(results.getString("CustomerMessage"));
-                            payment.setError_code1(results.getString("ResponseCode"));
-                            payment.setRefID(results.getString("CheckoutRequestID"));
-                            paymentRepository.save(payment);
-                            String mess = results.getString("CustomerMessage");
-                            return "{\"status\":\"success\",\"message\":\"" + mess + "\"}";
-                        } else {
-
-                            String mess = results.getString("CustomerMessage");
-                            payment.setDesc1(results.getString("CustomerMessage"));
-                            payment.setError_code1(results.getString("ResponseCode"));
-                            payment.setDesc2(results.getString("CustomerMessage"));
-                            payment.setError_code2(results.getString("ResponseCode"));
-                            payment.setStatus("FAILED");
-                            payment.setRefID(results.getString("CheckoutRequestID"));
-                            paymentRepository.save(payment);
-
-                            return "{\"status\":\"success\",\"message\":\"" + mess + "\"}";
-
-                        }
-                    } else {
-                        payment.setDesc1("Unknown response");
-                        payment.setError_code1("4001");
-                        payment.setDesc2("Unknown response");
-                        payment.setError_code2("4001");
-                        payment.setStatus("FAILED");
-                        paymentRepository.save(payment);
-                        return "{\"status\":\"success\",\"message\":\"Unknown response\"}";
-
-                    }
-
-                } else {
-                    payment.setDesc1("Unknown Error");
-                    payment.setError_code1("4001");
-                    payment.setDesc2("Unknown response");
-                    payment.setError_code2("4001");
-                    payment.setStatus("FAILED");
-                    paymentRepository.save(payment);
-                    return "{\"status\":\"success\",\"message\":\"Unknown ERROR\"}";
-                }
-
-            } else {
-                //return "Sorry, This Church is currently unavailable";
-                return "{\"status\":\"success\",\"message\":\"Sorry, This Church is currently unavailable\"}";
-
-            }
+            return getStkPushResponse(msisdn, churchID, reference, amount, timestamp, payment);
         } catch (Exception e) {
 
             e.printStackTrace();
             //   return "Sorry, a fatal error occured";
-            return "{\"status\":\"success\",\"message\":\"Sorry, a fatal error occured\"}";
+            response.setStatus("error");
+            response.setMessage("Sorry, a fatal error occured");
+            return response;
         }
 
 
+    }
+
+    private StkPushResponse getStkPushResponse(String msisdn, Long churchID, String reference, String amount, String timestamp, Payment payment) {
+        Church church = churchRepository.findChurchById(churchID);
+        if (church != null) {
+
+            return getStkPushResponse(msisdn, reference, amount, timestamp, payment, church);
+
+        } else {
+            response.setStatus("error");
+            response.setMessage("Sorry, This Church is currently unavailable");
+            return response;
+        }
+    }
+
+    private StkPushResponse getStkPushResponse(String msisdn, String reference, String amount, String timestamp, Payment payment, Church church) {
+        if (church.getStatus() != PayBillStatus.ACTIVE) {
+            response.setStatus("error");
+            response.setMessage("Sorry, The paybill is pending renewal");
+            return response;
+        }
+
+
+        payment.setPaymentMethod(PaymentMethod.MPESA);
+        payment.setAmount(amount);
+        payment.setChurch(church);
+        payment.setStartTime(timestamp);
+        payment.setMsisdn(msisdn);
+        payment.setReference(reference);
+        data = fn.prepareLNMRequest(msisdn, amount, reference, timestamp, church.getShortCode(), church.getPayBill(), church.getMpesaPasskey(), callbackUrl);
+
+        String result = webClient.stkpushrequest(mpesaEndpoint, data.toString());
+        payment = paymentRepository.save(payment);
+
+        JSONObject results = new JSONObject(result);
+
+        return getStkPushResponse(payment, results);
+    }
+
+    private StkPushResponse getStkPushResponse(Payment payment, JSONObject results) {
+        if (results.has("fault")) {
+            //return "Sorry, an error occured. Try again";
+            Date now2 = new Date();
+
+            String timestamp2 = new String(Functions.sdf.format(now2)).replaceAll("-", "");
+
+            payment.setDesc1("Sorry, auth error occured. Try again");
+            payment.setError_code1(results.getString("errorCode"));
+            payment.setDesc2("Sorry, auth error occured. Try again");
+            payment.setError_code2(results.getString("errorCode"));
+            payment.setStatus("FAILED");
+            paymentRepository.save(payment);
+            response.setStatus("error");
+            response.setMessage("Sorry, an error occured. Try again");
+            return response;
+        } else if (results.has("errorMessage")) {
+            if (results.has("errorCode")) {
+                if (results.getString("errorCode").equalsIgnoreCase("404.001.03")) {
+                    try {
+                        payment.setDesc1("Sorry, auth error occured. Try again");
+                        payment.setError_code1(results.getString("errorCode"));
+                        payment.setDesc2(results.getString("CustomerMessage"));
+                        payment.setError_code2(results.getString("ResponseCode"));
+                        payment.setStatus("FAILED");
+                        paymentRepository.save(payment);
+                        response.setStatus("error");
+                        response.setMessage("Sorry, an error occured. Try again");
+                        return response;
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+            }
+            //  return results.getString("errorMessage");
+            response.setStatus("error");
+            response.setMessage(results.getString("errorMessage"));
+            return response;
+
+        } else if (results.has("ResponseCode")) {
+            if (results.has("CustomerMessage")) {
+
+
+                if (results.getString("ResponseCode").equalsIgnoreCase("0")) {
+                    payment.setDesc1(results.getString("CustomerMessage"));
+                    payment.setError_code1(results.getString("ResponseCode"));
+                    payment.setRefID(results.getString("CheckoutRequestID"));
+                    paymentRepository.save(payment);
+                    String mess = results.getString("CustomerMessage");
+                    response.setStatus("success");
+                    response.setMessage(mess);
+                    return response;
+                } else {
+
+                    String mess = results.getString("CustomerMessage");
+                    payment.setDesc1(results.getString("CustomerMessage"));
+                    payment.setError_code1(results.getString("ResponseCode"));
+                    payment.setDesc2(results.getString("CustomerMessage"));
+                    payment.setError_code2(results.getString("ResponseCode"));
+                    payment.setStatus("FAILED");
+                    payment.setRefID(results.getString("CheckoutRequestID"));
+                    paymentRepository.save(payment);
+                    response.setStatus("error");
+                    response.setMessage(mess);
+                    return response;
+
+                }
+            } else {
+                payment.setDesc1("Unknown response");
+                payment.setError_code1("4001");
+                payment.setDesc2("Unknown response");
+                payment.setError_code2("4001");
+                payment.setStatus("FAILED");
+                paymentRepository.save(payment);
+                response.setStatus("error");
+                response.setMessage("Unknown response from M-PESA");
+                return response;
+
+            }
+
+        } else {
+            payment.setDesc1("Unknown Error");
+            payment.setError_code1("4001");
+            payment.setDesc2("Unknown response");
+            payment.setError_code2("4001");
+            payment.setStatus("FAILED");
+            paymentRepository.save(payment);
+            response.setStatus("error");
+            response.setMessage("Unknown response from M-PESA");
+            return response;
+        }
     }
 }
