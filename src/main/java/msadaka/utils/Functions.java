@@ -3,6 +3,8 @@ package msadaka.utils;
 import msadaka.models.Payment;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -12,6 +14,7 @@ public class Functions {
     public static JSONObject data = new JSONObject();
     public static DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-kk-mm-ss");
     public static SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+    private Logger logger = LoggerFactory.getLogger(Functions.class);
 
     public Functions() {
     }
@@ -20,8 +23,9 @@ public class Functions {
 
         try {
 
-            System.out.println("Phone: " + msisdn);
-            System.out.println("Phone2: 254" + msisdn.substring(msisdn.length() - 9));
+            logger.info("Phone: " + msisdn);
+            String substring = msisdn.substring(msisdn.length() - 9);
+            logger.info("Phone2: 254" + substring);
             byte[] message = (shortcode + passkey + timestamp).getBytes("UTF-8"); //base64.encode(Shortcode:Passkey:Timestamp)
             String password = Base64.getEncoder().encodeToString(message);
             password = password.replaceAll("\n", "");
@@ -30,9 +34,9 @@ public class Functions {
             data.put("Timestamp", timestamp);
             data.put("TransactionType", "CustomerPayBillOnline");
             data.put("Amount", amt);
-            data.put("PartyA", "254" + msisdn.substring(msisdn.length() - 9));
+            data.put("PartyA", "254" + substring);
             data.put("PartyB", payBill);
-            data.put("PhoneNumber", "254" + msisdn.substring(msisdn.length() - 9));
+            data.put("PhoneNumber", "254" + substring);
             data.put("CallBackURL", callbackurl);
             data.put("AccountReference", account);
             data.put("TransactionDesc", account);
@@ -93,10 +97,10 @@ public class Functions {
                 System.out.print(result.getLong("statusCode") + ",");
                 System.out.print(result.getString("number") + ",");
                 System.out.print(result.getString("messageId") + ",");
-                System.out.println(result.getString("cost"));
+                logger.info(result.getString("cost"));
             }
         } catch (Exception e) {
-            System.out.println("Encountered an error while sending " + e.getMessage());
+            logger.info("Encountered an error while sending " + e.getMessage());
         }
     }
 

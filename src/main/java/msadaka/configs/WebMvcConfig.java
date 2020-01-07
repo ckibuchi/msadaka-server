@@ -1,19 +1,17 @@
 package msadaka.configs;
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-
-import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -38,18 +36,15 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
     }
 
     @Override
-    public void configureMessageConverters(List<HttpMessageConverter<?>> messageConverters) {
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(mappingJackson2HttpMessageConverter());
+    }
 
-        StringHttpMessageConverter stringConverter = new StringHttpMessageConverter();
-        stringConverter.setSupportedMediaTypes(Arrays.asList( //
-                MediaType.TEXT_PLAIN, //
-                MediaType.TEXT_HTML, //
-                MediaType.APPLICATION_JSON));
-        MappingJackson2HttpMessageConverter jsonMessageConverter = new MappingJackson2HttpMessageConverter();
-        messageConverters.add(jsonMessageConverter);
-        messageConverters.add(stringConverter);
-        messageConverters.add(new MappingJackson2HttpMessageConverter());
-        super.configureMessageConverters(messageConverters);
+    @Bean
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setObjectMapper(new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false));
+        return converter;
     }
 
     @Override

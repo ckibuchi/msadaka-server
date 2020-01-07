@@ -10,6 +10,7 @@ import msadaka.models.Payment;
 import msadaka.repositories.ChurchRepository;
 import msadaka.repositories.PaymentRepository;
 import msadaka.utils.Functions;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public class ChurchService {
 
         Date now = new Date();
 
-        String timestamp = new String(Functions.sdf.format(now)).replaceAll("-", "");
+        String timestamp = Functions.sdf.format(now).replaceAll("-", "");
         Payment payment = new Payment();
         try {
             // Church church=churchRepository.findChurchByIdAndStatus(churchID,PayBillStatus.ACTIVE);
@@ -130,7 +131,7 @@ public class ChurchService {
 
     }
 
-    private StkPushResponse getStkPushResponse(String msisdn, Long churchID, String reference, String amount, String timestamp, Payment payment) {
+    private StkPushResponse getStkPushResponse(String msisdn, Long churchID, String reference, String amount, String timestamp, Payment payment) throws JSONException {
         Church church = churchRepository.findChurchById(churchID);
         if (church != null) {
 
@@ -143,7 +144,7 @@ public class ChurchService {
         }
     }
 
-    private StkPushResponse getStkPushResponse(String msisdn, String reference, String amount, String timestamp, Payment payment, Church church) {
+    private StkPushResponse getStkPushResponse(String msisdn, String reference, String amount, String timestamp, Payment payment, Church church) throws JSONException {
         if (church.getStatus() != PayBillStatus.ACTIVE) {
             response.setStatus("error");
             response.setMessage("Sorry, The paybill is pending renewal");
@@ -157,6 +158,7 @@ public class ChurchService {
         payment.setStartTime(timestamp);
         payment.setMsisdn(msisdn);
         payment.setReference(reference);
+        logger.info("callbackUrl "+callbackUrl);
         data = fn.prepareLNMRequest(msisdn, amount, reference, timestamp, church.getShortCode(), church.getPayBill(), church.getMpesaPasskey(), callbackUrl);
 
         String result = webClient.stkpushrequest(mpesaEndpoint, data.toString());
@@ -167,13 +169,8 @@ public class ChurchService {
         return getStkPushResponse(payment, results);
     }
 
-    private StkPushResponse getStkPushResponse(Payment payment, JSONObject results) {
+    private StkPushResponse getStkPushResponse(Payment payment, JSONObject results) throws JSONException {
         if (results.has("fault")) {
-            //return "Sorry, an error occured. Try again";
-            Date now2 = new Date();
-
-            String timestamp2 = new String(Functions.sdf.format(now2)).replaceAll("-", "");
-
             payment.setDesc1("Sorry, auth error occured. Try again");
             payment.setError_code1(results.getString("errorCode"));
             payment.setDesc2("Sorry, auth error occured. Try again");
@@ -204,7 +201,6 @@ public class ChurchService {
                 }
 
             }
-            //  return results.getString("errorMessage");
             response.setStatus("error");
             response.setMessage(results.getString("errorMessage"));
             return response;

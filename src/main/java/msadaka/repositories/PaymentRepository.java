@@ -18,6 +18,8 @@ public interface PaymentRepository extends CrudRepository<Payment, Long> {
 
     List<Payment> findPaymentsByPaymentDate(Date paymentDate);
 
+    List <Payment> findPaymentsByChurchId(Long Id);
+
     //  List<Payment> findPaymentsByCarRegNoAndPaymentDate(String carRegNo, Date paymentDate);
 
     // List<Payment> findPaymentsByCarRegNoAndCountyAndSubCountyAndPaymentDateAndStatus(String carRegNo, String county, String subCounty, Date paymentDate, String status);

@@ -19,7 +19,7 @@ plugins {
 }
 
 group = "m-sadaka"
-version = "1.0.1"
+version = "1.0.2"
 
 val javaVersion by extra { JavaVersion.VERSION_1_8}
 val swaggerVersion by extra { "2.9.2" }
@@ -31,7 +31,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:3.2.0")
     implementation("org.json:json:20180130")
     implementation("com.google.code.gson:gson:2.8.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10.1")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
 
