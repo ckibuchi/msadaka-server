@@ -27,18 +27,17 @@ public class MpesaService {
     Functions fn = new Functions();
 
     public void processCallBack(String data) {
-        System.out.println("data " + data);
-
+        logger.info("callBack Data " + data.toString());
         try {
             JSONObject results_1 = new JSONObject(data);
-            System.out.println(results_1);
+            logger.info(String.valueOf(results_1));
             JSONObject results2 = results_1.getJSONObject("Body");
             JSONObject results = results2.getJSONObject("stkCallback");
-            System.out.println(results);
+            logger.info(String.valueOf(results));
             Date now = new Date();
             java.sql.Date sqlDate = new java.sql.Date(now.getTime());
 
-            String timestamp = new String(Functions.sdf.format(now)).replaceAll("-", "");
+            String timestamp = Functions.sdf.format(now).replaceAll("-", "");
             Payment payment = paymentRepository.findPaymentByRefID(results.getString("CheckoutRequestID"));
             //sendSMS
             payment.setDesc2(results.getString("ResultDesc"));

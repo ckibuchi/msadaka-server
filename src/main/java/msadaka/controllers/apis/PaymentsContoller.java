@@ -1,13 +1,10 @@
 package msadaka.controllers.apis;
 
-import com.google.gson.Gson;
 import msadaka.beans.PostBean;
 import msadaka.models.Payment;
 import msadaka.repositories.PaymentRepository;
 import msadaka.services.PaymentService;
 import msadaka.utils.Functions;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

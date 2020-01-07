@@ -31,7 +31,6 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:3.2.0")
     implementation("org.json:json:20180130")
     implementation("com.google.code.gson:gson:2.8.0")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.10.1")
     implementation("io.springfox:springfox-swagger-ui:$swaggerVersion")
     implementation("io.springfox:springfox-swagger2:$swaggerVersion")
 

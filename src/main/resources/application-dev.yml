@@ -8,7 +8,7 @@ mpesa:
   appkey: At2WigukYMYmKS5FAamPmFPpidWUxGUM
   appsecret: wA2LqmDDHVrQf4I3
   authurl: https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials
-  callbackurl: http://msadaka-server.us-east-1.elasticbeanstalk.com/api/v1/mpesa-call-back
+  callbackurl: http://msadaka-server.us-east-1.elasticbeanstalk.com/api/v1/mpesa/callback
   endpoint: https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest
   passkey: 45b8d79eba4a027bd8d54ac52e9c18950a54d04ed681f5de00d02364c1027edf
   shortcode: 333306
