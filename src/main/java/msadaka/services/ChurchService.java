@@ -110,7 +110,7 @@ public class ChurchService {
     }
 
     public StkPushResponse stkPush(Double the_amount, String msisdn, Long churchID, String reference) {
-        String amount = new String("" + String.format("%.0f", the_amount));
+        String amount = String.format("%.0f", the_amount);
 
         Date now = new Date();
 
@@ -170,6 +170,7 @@ public class ChurchService {
     }
 
     private StkPushResponse getStkPushResponse(Payment payment, JSONObject results) throws JSONException {
+        response.setPaymentId(payment.getId());
         if (results.has("fault")) {
             payment.setDesc1("Sorry, auth error occured. Try again");
             payment.setError_code1(results.getString("errorCode"));

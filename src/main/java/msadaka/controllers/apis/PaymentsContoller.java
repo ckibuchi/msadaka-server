@@ -196,12 +196,17 @@ public class PaymentsContoller {
 
     }
 
-    @GetMapping("/getChurchPayments/{Id}")
+    @GetMapping("/all-church-payments/{Id}")
     public List<Payment> findPaymentsByChurchId(@PathVariable long Id)
     {
         return  paymentService.findPaymentsByChurchId(Id);
     }
 
+    @GetMapping("/payment-by-id/{Id}")
+    public Payment findPaymentById(@PathVariable long Id)
+    {
+        return  paymentService.findPaymentById(Id);
+    }
 
     @Autowired
     PaymentRepository paymentRepository;

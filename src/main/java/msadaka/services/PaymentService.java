@@ -17,4 +17,9 @@ public class PaymentService {
     {
         return paymentRepository.findPaymentsByChurchId(Id);
     }
+
+    public Payment  findPaymentById(long Id)
+    {
+        return paymentRepository.findPaymentById(Id);
+    }
 }

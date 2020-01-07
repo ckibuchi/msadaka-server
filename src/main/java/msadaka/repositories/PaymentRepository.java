@@ -12,7 +12,7 @@ import java.util.List;
 public interface PaymentRepository extends CrudRepository<Payment, Long> {
     Payment findPaymentByRefID(String refID);
 
-    Payment findPaymentById(int Id);
+    Payment findPaymentById(Long Id);
 
     List<Payment> findPaymentsByMsisdnAndPaymentDateAndStatus(String msisdn, Date paymentDate, String status);
 
